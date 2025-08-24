@@ -1,11 +1,12 @@
 # fastapi_server
-간단 설명: 파편화된 python파일에 일관성 부여
+간단 설명: 파편화된 python파일에 일관성 부여<br>
 상세 설명: 다양한 연구주제를 진행하면서 파편화된 python파일을 mvc에 적용하여 사례 기반으로 python 파일 활용
 
 ---
 ## 📦 요구 사항
 - Python 3.13+
 - pip
+
 
 ## 🛠 설치
 ```bash
@@ -17,12 +18,13 @@ python -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -U pip
 pip install -r requirements.txt
+```
 
 ## ✨ 기능 요약
 - Router 정의
     app/routers/items.py 와 같이 routers/ 폴더에 엔드포인트를 정의합니다.
     각 router 파일은 APIRouter 객체를 생성하고, API 엔드포인트(path, method, response_model 등)를 등록합니다.
-    
+
 - Model 정의
     app/models/ 폴더에서 사용될 데이터 모델(엔티티명/DB 모델/스키마 참조용 이름)을 작성합니다.
 
