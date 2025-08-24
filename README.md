@@ -17,3 +17,19 @@ python -m venv .venv
 source .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -U pip
 pip install -r requirements.txt
+
+## ✨ 기능 요약
+- Router 정의
+    app/routers/items.py 와 같이 routers/ 폴더에 엔드포인트를 정의합니다.
+    각 router 파일은 APIRouter 객체를 생성하고, API 엔드포인트(path, method, response_model 등)를 등록합니다.
+    
+- Model 정의
+    app/models/ 폴더에서 사용될 데이터 모델(엔티티명/DB 모델/스키마 참조용 이름)을 작성합니다.
+
+- Service 모듈화
+    model: Optional[Dict[str, str]] = {'a': 'b'} 와 같이 매핑 규칙을 정의하여, 특정 키('b')에 대응하는 처리 로직을 services/b_operation.py 파일에 구현합니다.
+    서비스 로직은 컨트롤러(Router)에서 호출되며, 데이터 가공·연산·외부 자원 접근을 담당합니다.
+
+- Processor 클래스 네이밍 규칙
+    서비스 모듈 내 클래스는 BProcessor 와 같이 앞 글자를 대문자로 시작하는 명명 규칙을 따릅니다.
+    각 Processor 클래스는 단일 책임 원칙을 지켜, 해당 기능의 입력 검증 → 처리 → 결과 반환 과정을 담당합니다.
