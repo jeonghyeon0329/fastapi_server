@@ -23,7 +23,6 @@ class TestProcessor:
     """데이터 생성"""
     def generation(self):
         try:
-            print("test : generation")
             return None
         
         except Exception as e:
@@ -33,7 +32,6 @@ class TestProcessor:
     def parsing(self):
             
         try:
-            print("test : parsing")
             return None
         
         except Exception as e:

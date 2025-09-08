@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Form, UploadFile, HTTPException, responses
 from app.core.logging_config import setup_logging, get_request_logger
 from pydantic import BaseModel
-from typing import Optional, Type
+from typing import Optional, Type, Dict, Any
 import os, uuid
 
 logger = setup_logging()
@@ -9,28 +9,42 @@ router = APIRouter()
 
 async def handle_request(
     request_cls: Type[BaseModel],
-    user_id: str,
-    affiliation: Optional[str],
-    file: Optional[UploadFile] = None,
-    parameter: Optional[str] = None,
+    payload: Dict[str, Any], *,
     return_file: bool = False
 ):
+    
+    try:
+        param = request_cls(**payload)
+    except Exception as e:
+        raise HTTPException(
+            status_code=422, 
+            detail={
+                "error_code" : "A001",
+                "message" : "Payload validation failed",
+                "errors" : e.errors()
+            })
     from app.operate.operate_service import operate_run
-
     operation_id = uuid.uuid4().hex
     action = request_cls.__name__  # 액션명(스키마명 기반)
 
-    req_logger = get_request_logger(user_id, affiliation, operation_id, action)
+    req_logger = get_request_logger(operation_id, action)
+    req_logger.info("REQUEST_RECEIVED")
 
     try:
-        req_logger.info("REQUEST_RECEIVED")
+        result = await operate_run(param, payload)
 
-        param = request_cls(
-            user_id=user_id,
-            affiliation=affiliation,
-            filename=file.filename if file else ""
-        )
-        result = await operate_run(param, file, parameter)
+    except HTTPException as e: 
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail={
+                "error_code" : "A002",
+                "message" : "undefined error",
+                "errors" : e
+            })
+    try:
         if return_file:
             file_path = result.get('result') if result else None
             if file_path:
@@ -74,9 +88,11 @@ async def handle_request(
         
     
 @router.post("/~test")
-async def run_ocr(
+async def run_test(
     user_id: str = Form(...),
     affiliation: Optional[str] = Form(None)
 ):
+    payload = {'user_id' : user_id, 'affiliation': affiliation}
     from app.models.test_model import testRequest
-    return await handle_request(testRequest, user_id, affiliation)
+    return await handle_request(testRequest, payload)
+

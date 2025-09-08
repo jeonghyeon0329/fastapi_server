@@ -6,7 +6,6 @@ import json
 class testRequest(BaseModel):
     user_id: str
     affiliation: Optional[str] = None
-    filename: str
     model: Optional[Dict[str, str]] = {
         "test": "test",
     }

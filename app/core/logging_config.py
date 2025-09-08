@@ -36,16 +36,12 @@ def setup_logging() -> logging.Logger:
     return logger
 
 def get_request_logger(
-    user_id: str | None,
-    affiliation: str | None,
     operation_id: str,
     action: str,
 ) -> LoggerAdapter:
     base = logging.getLogger("fastapi_server")
     extra = {
         "operation_id": operation_id,
-        "user_id": user_id or "-",
-        "affiliation": affiliation or "-",
         "action": action or "-",
     }
     return LoggerAdapter(base, extra)
