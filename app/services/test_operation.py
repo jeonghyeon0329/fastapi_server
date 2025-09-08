@@ -1,6 +1,6 @@
-from .utils import *
+from app.utils import *
 
-class TestProcessor:
+class _TestProcessor:
     def __init__(self, task_info, operate_parameter):
         self.task_info = task_info
         self.operate_parameter = operate_parameter
@@ -14,7 +14,7 @@ class TestProcessor:
             delete_patterns = [
 
             ]
-            resultfile_delete(delete_patterns)
+            Fileutils().resultfile_delete(delete_patterns)
             return {"success": True, "error_message": None}
         
         except Exception as e:

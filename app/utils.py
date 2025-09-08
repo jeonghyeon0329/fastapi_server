@@ -1,6 +1,8 @@
 from fastapi import HTTPException, UploadFile
 from typing import List, Tuple, Union, Optional, Iterable
 from pathlib import Path
+import glob
+import os
 
 def _safe_filename(name: str) -> str: 
     """ 사용자가 파일명으로 파일경로를 집어넣는 경우를 막음"""
@@ -93,3 +95,17 @@ class FileManager:
             lower = name.lower()
             if not any(lower.endswith(e) for e in exts):
                 raise HTTPException(status_code=422, detail=f"unsupported file extension: {name}")
+        
+class Fileutils:
+
+    def __init__(self):
+        pass
+
+    def resultfile_delete(self, delete_patterns):
+        try:
+            for dir_path, pattern in delete_patterns:
+                full_pattern = os.path.join(dir_path, pattern)
+                for file_path in glob.glob(full_pattern):
+                    if os.path.exists(file_path): os.remove(file_path)
+        except Exception as e:
+            raise Exception(e)
