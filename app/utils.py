@@ -3,9 +3,7 @@ from typing import List, Tuple, Union, Optional, Iterable
 from pathlib import Path
 
 def _safe_filename(name: str) -> str: 
-    """
-        사용자가 파일명으로 파일경로를 집어넣는 경우를 막음
-    """
+    """ 사용자가 파일명으로 파일경로를 집어넣는 경우를 막음"""
     return Path(name).name
 
 def _normalize_extensions(exts: Union[str, Iterable[str]]) -> List[str]:
@@ -21,24 +19,36 @@ class FileManager:
     UPLOAD_ROOT = Path("uploads")
     def __init__(self, user_id: str, affiliation: str):
         self.user_id: str = user_id
-        self.affiliation: str = (affiliation or "anonymous").strip() or "anonymous"
-        self.base_dirname: str = f"{self.affiliation}_{self.user_id}"
+        self.affiliation = affiliation
+        self.base_dir = f"{self.affiliation}_{self.user_id}" if self.user_id and self.affiliation else None
         self.subdirs: List[str] = ["dataset", "dataset_tmp", "result"]
-        
-        self.base_path: Path = self._ensure_user_dirs()
-        self.dataset_dir: Path = self.base_path / "dataset"
-        self.dataset_tmp: Path = self.base_path / "dataset_tmp"
-        self.result_dir: Path = self.base_path / "result"
-        self.filename_stem: Optional[str] = None
-        self.saved_fullpath: Optional[Path] = None #dataset_dir + filename.확장자
-        
-    def _ensure_user_dirs(self) -> Path:
-        base_path = self.UPLOAD_ROOT / self.base_dirname
-        base_path.mkdir(parents=True, exist_ok=True)
-        for name in self.subdirs:
-            (base_path / name).mkdir(parents=True, exist_ok=True)
-        return base_path
+        self.filename = None
+        self.full_path = None
 
+        if self.user_id and self.affiliation:
+            self.base_path = self._init_user_folder()
+            self.dataset_dir = self.base_path / "dataset"
+            self.dataset_tmp = self.base_path / "dataset_tmp"
+            self.result_dir = self.base_path / "result"
+        else:
+            self.base_path = None
+            self.dataset_dir = None
+            self.dataset_tmp = None
+            self.result_dir = None
+
+    ## 유저별로 폴더가 없는 경우 폴더 생성    
+    def _init_user_folder(self) -> Path:
+        base_path = self.UPLOAD_ROOT / self.base_dir
+
+        if not base_path.exists():
+            base_path.mkdir(parents=True)
+
+        for subfolder in self.subfolder:
+            sub_path = base_path / subfolder
+            if not sub_path.exists():
+                sub_path.mkdir(parents=True)
+        return base_path
+    
     async def save_file_to_dataset(self, file: UploadFile, chunk_size: int = 1024 * 1024) -> Path:
         
         if not file or not getattr(file, "filename", None):
