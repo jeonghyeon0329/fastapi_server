@@ -1,12 +1,10 @@
-from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings(BaseSettings):
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
-    APP_ENV: Literal["dev", "staging", "prod"] = "dev"
-    DEBUG: bool = False
-
+class _Settings(BaseSettings):
+    host: str
+    port: int
+    app_env: str
+    debug: bool
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -18,4 +16,4 @@ class Settings(BaseSettings):
     def reload(self) -> bool:
         return self.DEBUG or self.APP_ENV != "prod"
 
-settings = Settings()
+settings = _Settings()

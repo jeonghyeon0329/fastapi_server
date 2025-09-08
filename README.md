@@ -14,7 +14,7 @@ git clone https://github.com/jeonghyeon0329/fastapi_server.git
 
 # 2) 가상환경 & 패키지 설치 (pip)
 python -m venv .venv
-source .venv/bin/activate     # Windows: .venv\Scripts\activate
+source .venv/bin/activate     # Windows: .\venv\Scripts\activate
 pip install -U pip
 pip install -r requirements.txt
 ```

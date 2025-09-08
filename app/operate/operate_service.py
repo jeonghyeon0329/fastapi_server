@@ -5,7 +5,6 @@ import traceback
 import datetime
 import time
 
-
 async def operate_run(operate_parameter, file, keyword = None):
     """ 파일 처리부 """
     try:

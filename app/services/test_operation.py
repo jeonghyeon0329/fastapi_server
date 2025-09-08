@@ -24,7 +24,6 @@ class TestProcessor:
     def generation(self):
         try:
             print("test : generation")
-            raise
             return None
         
         except Exception as e:
