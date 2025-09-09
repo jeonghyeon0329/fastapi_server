@@ -28,7 +28,6 @@ def test(name, payload, expected_status):
 
     if expected_status == 200:
         body = resp.json()
-        print(body)
         assert "operation_id" in body.get('detail')
         assert "result" in body.get('detail')
         assert "spending_time(s)" in body.get('detail')
@@ -36,5 +35,4 @@ def test(name, payload, expected_status):
 
     elif expected_status == 500:
         body = resp.json()
-        print(body)
         assert "detail" in body.get('detail')

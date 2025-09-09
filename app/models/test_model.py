@@ -7,7 +7,7 @@ class _testRequest(BaseModel):
     user_id: str
     affiliation: Optional[str] = None
     model: Optional[Dict[str, str]] = {
-        "test": "test",
+        "test": "_test",
     }
     
     @field_validator("model", mode="before")

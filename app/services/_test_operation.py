@@ -1,6 +1,6 @@
 from app.utils import *
 
-class TestProcessor:
+class _testProcessor:
     def __init__(self, task_info, operate_parameter):
         self.task_info = task_info
         self.operate_parameter = operate_parameter
