@@ -93,6 +93,6 @@ async def run_test(
     affiliation: Optional[str] = Form(None)
 ):
     payload = {'user_id' : user_id, 'affiliation': affiliation}
-    from app.models.test_model import testRequest
-    return await handle_request(testRequest, payload)
+    from app.models.test_model import _testRequest
+    return await handle_request(_testRequest, payload)
 

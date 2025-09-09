@@ -3,7 +3,7 @@ from pydantic import BaseModel, field_validator
 from typing import Optional, Dict
 import json
 
-class testRequest(BaseModel):
+class _testRequest(BaseModel):
     user_id: str
     affiliation: Optional[str] = None
     model: Optional[Dict[str, str]] = {

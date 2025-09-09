@@ -1,6 +1,6 @@
 from fastapi import Request, responses, HTTPException
 
-ALLOWED_IPS = {'127.0.0.1','localhost'}
+ALLOWED_IPS = {'127.0.0.1','localhost','testclient'}
 ALLOWED_PREFIXES = ["/items"]
 
 """ 접근 허용 ip, api endpoint 검사"""
