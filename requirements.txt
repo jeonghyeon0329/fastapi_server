@@ -3,3 +3,5 @@ python-multipart==0.0.20
 pydantic-settings==2.8.1
 uvicorn==0.34.0
 rich==14.1.0
+pytest==8.4.2
+httpx==0.28.1
