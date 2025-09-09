@@ -34,3 +34,7 @@ pip install -r requirements.txt
 - Processor 클래스 네이밍 규칙
     서비스 모듈 내 클래스는 BProcessor 와 같이 앞 글자를 대문자로 시작하는 명명 규칙을 따릅니다.
     각 Processor 클래스는 단일 책임 원칙을 지켜, 해당 기능의 입력 검증 → 처리 → 결과 반환 과정을 담당합니다.
+
+- Pytest 기능 정의
+    서비스 로직을 구현하고 Pytest 기능을 활용하여 기능 테스트를 진행한다.
+    기능테스트의 주된 목적은 [API]input & output 검증, [API] 속도 측정이 있다.

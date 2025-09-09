@@ -1,9 +1,6 @@
-from fastapi.testclient import TestClient
-from main import app
 import requests
 import pytest
 
-client = TestClient(app)
 BASE_URL = "http://localhost:9000"
 
 @pytest.mark.parametrize(
@@ -23,8 +20,6 @@ def test(name, payload, expected_status):
     url = f"{BASE_URL}/items/~test"
     # resp = requests.post(url, json=payload, timeout=10)
     resp = requests.post(url, data=payload, timeout=10)
-    # resp = client.post("/items/~test", json=payload)
-    # assert resp.status_code == expected_status, f"{name} failed: {resp.text}"
 
     if expected_status == 200:
         body = resp.json()

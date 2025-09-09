@@ -68,7 +68,7 @@ class FileManager:
                 buffer.write(chunk)
         return self.saved_fullpath
 
-    @staticmethod
+    @staticmethod # self 영향 없이 진행
     def require_file_count(files: List[UploadFile], expected_count: int) -> Union[UploadFile, Tuple[UploadFile, ...]]:
         if not isinstance(files, list):
             raise HTTPException(status_code=422, detail="files must be a list")
