@@ -54,8 +54,13 @@ class FileManager:
     async def save_file_to_dataset(self, file: UploadFile, chunk_size: int = 1024 * 1024) -> Path:
         
         if not file or not getattr(file, "filename", None):
-            raise HTTPException(status_code=422, detail="file is required")
-
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_code" : "C001",
+                    "message" : "File required",
+            })
+    
         safe_name = _safe_filename(file.filename)
         self.filename_stem = Path(safe_name).stem ## 확장자 제외
         self.saved_fullpath = self.dataset_dir / safe_name
@@ -71,15 +76,37 @@ class FileManager:
     @staticmethod # self 영향 없이 진행
     def require_file_count(files: List[UploadFile], expected_count: int) -> Union[UploadFile, Tuple[UploadFile, ...]]:
         if not isinstance(files, list):
-            raise HTTPException(status_code=422, detail="files must be a list")
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_code" : "C002",
+                    "message" : "Files format error",
+            })
+            
         if len(files) != expected_count:
-            raise HTTPException(status_code=422, detail=f"expected {expected_count} files, got {len(files)}")
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_code" : "C003",
+                    "message" : "Files count error",
+            })
 
         names = [getattr(f, "filename", "") for f in files]
         if any(not n for n in names):
-            raise HTTPException(status_code=422, detail="file without filename detected")
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_code" : "C004",
+                    "message" : "Files name error",
+            })
+
         if len(names) != len(set(names)):
-            raise HTTPException(status_code=422, detail="duplicated filenames detected")
+            raise HTTPException(
+                status_code=422, 
+                detail={
+                    "error_code" : "C005",
+                    "message" : "Files duplicate error",
+            })
 
         return files[0] if expected_count == 1 else tuple(files)
 
@@ -91,10 +118,20 @@ class FileManager:
         for f in file_list:
             name = getattr(f, "filename", "") or ""
             if not name:
-                raise HTTPException(status_code=422, detail="file without filename detected")
+                raise HTTPException(
+                    status_code=422, 
+                    detail={
+                        "error_code" : "C006",
+                        "message" : "Files name error",
+                })
             lower = name.lower()
             if not any(lower.endswith(e) for e in exts):
-                raise HTTPException(status_code=422, detail=f"unsupported file extension: {name}")
+                raise HTTPException(
+                    status_code=422, 
+                    detail={
+                        "error_code" : "C007",
+                        "message" : f"Files extension error : {name}",
+                })
         
 class Fileutils:
 
@@ -107,5 +144,6 @@ class Fileutils:
                 full_pattern = os.path.join(dir_path, pattern)
                 for file_path in glob.glob(full_pattern):
                     if os.path.exists(file_path): os.remove(file_path)
+            
         except Exception as e:
             raise Exception(e)
