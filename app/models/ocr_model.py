@@ -10,7 +10,7 @@ class ocrRequest(BaseModel):
         "ocr_layout": "ocrly",
         "ocr_tsr": "ocrtsr",
         "ocr_text": "ocrtext",
-        # "ocr_xlsx": "ocrxlsx",
+        "ocr_xlsx": "ocrxlsx",
         # "ocrcleaning": "ocrcln",
     }
     

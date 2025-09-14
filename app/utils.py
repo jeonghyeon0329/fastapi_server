@@ -3,6 +3,7 @@ from typing import List, Tuple, Union, Optional, Iterable
 from rich.console import Console
 from pathlib import Path
 from PIL import Image
+import pandas as pd
 import tempfile, json, shutil, cv2
 import os, io, glob, subprocess, sys, itertools, time, threading
 
@@ -18,6 +19,49 @@ def _normalize_extensions(exts: Union[str, Iterable[str]]) -> List[str]:
         if not e: continue
         out.append(e if e.startswith(".") else f".{e}")
     return out
+
+## 2개의 데이터프레임의 레코드별 신뢰도 계산
+def credit(x, cells, overlap_threshold = 0):
+    rect1 = (x["x1"], x["y1"], x["x2"], x["y2"])
+    
+    cells["intersection_area"] = cells.apply(
+        lambda row: _compute_intersection_area(
+            rect1,
+            (row["x1"], row["y1"], row["x2"], row["y2"])
+        ),
+        axis=1
+    )
+    
+    cells = cells[cells["intersection_area"] >= overlap_threshold].copy()
+    if cells.empty:
+        return None 
+
+    max_idx = cells["intersection_area"].idxmax()
+    row = cells.loc[max_idx, ["page_index", "table_index", "row_id", "col_id", "x1", "y1", "x2", "y2"]]
+    return_value = "_".join(map(str, row))
+    return return_value
+
+## 합집합, 교집합
+def _compute_intersection_area(rect1, rect2):
+    x1, y1, x2, y2 = rect1
+    x1_, y1_, x2_, y2_ = rect2
+    
+    xi1 = max(x1, x1_)
+    yi1 = max(y1, y1_)
+    xi2 = min(x2, x2_)
+    yi2 = min(y2, y2_)
+
+    try:
+        text_area = (x2 - x1) * (y2 - y1)
+    except: return 0
+    
+    if xi1 < xi2 and yi1 < yi2:
+        intersection_area = (xi2 - xi1) * (yi2 - yi1)
+        ratio = intersection_area / text_area if text_area > 0 else 0
+        return ratio
+
+    else: return 0
+
 
 class FileManager:
     UPLOAD_ROOT = Path("uploads")
