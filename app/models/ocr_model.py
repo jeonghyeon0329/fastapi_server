@@ -9,7 +9,7 @@ class ocrRequest(BaseModel):
     model: Optional[Dict[str, str]] = {
         "ocr_layout": "ocrly",
         "ocr_tsr": "ocrtsr",
-        # "ocr_text": "ocrtext",
+        "ocr_text": "ocrtext",
         # "ocr_xlsx": "ocrxlsx",
         # "ocrcleaning": "ocrcln",
     }
