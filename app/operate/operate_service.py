@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from rich.console import Console
 from app.utils import *
 import importlib
 import datetime

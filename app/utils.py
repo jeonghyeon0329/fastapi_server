@@ -1,9 +1,10 @@
 from fastapi import HTTPException, UploadFile
 from typing import List, Tuple, Union, Optional, Iterable
+from rich.console import Console
 from pathlib import Path
 from PIL import Image
-import tempfile
-import os, io, glob, subprocess, sys
+import tempfile, json, shutil, cv2
+import os, io, glob, subprocess, sys, itertools, time, threading
 
 def _safe_filename(name: str) -> str: 
     """ 사용자가 파일명으로 파일경로를 집어넣는 경우를 막음"""
@@ -27,6 +28,7 @@ class FileManager:
         self.subdirs: List[str] = ["dataset", "dataset_tmp", "result"]
         self.filename = None
         self.full_path = None
+        self.file_info = None
 
         if self.user_id and self.affiliation:
             self.base_path = self._init_user_folder()
@@ -64,13 +66,14 @@ class FileManager:
         safe_name = _safe_filename(file.filename)
         self.filename = Path(safe_name).stem ## 확장자 제외
         self.full_path = self.dataset_dir / safe_name
-
         with open(self.full_path, "wb") as buffer:
             while True:
                 chunk = await file.read(chunk_size)
                 if not chunk:
                     break
                 buffer.write(chunk)
+
+        self.file_info = Fileutils().pdf_info(self.full_path)
         return self.full_path
 
     @staticmethod # self 영향 없이 진행
@@ -134,7 +137,6 @@ class FileManager:
                 })
         
 class Fileutils:
-
     def __init__(self):
         pass
 
@@ -224,18 +226,9 @@ class Fileutils:
                     "message" : "unexpected Files-format",
                     "errors" : str(e)
                 })
-        
-    # def pdf_info(self, pdf_path):
-    #     print(pdf_path)
-    #     from pdf2image import convert_from_path
-    #     images = convert_from_path(pdf_path)
-    #     print(images)
-    #     return {"images" : images, "page_count": len(images)}
     
-
     def pdf_info(self, pdf_path: str):
         import pypdfium2 as pdfium
-
         pdf = pdfium.PdfDocument(pdf_path)
         images = []
         for i in range(len(pdf)):
@@ -244,3 +237,34 @@ class Fileutils:
             images.append(pil_image)
 
         return {"images": images, "page_count": len(images)}
+    
+class PrintUtils:
+    def __init__(self):
+        self.console = Console()
+
+    def show_spinner(self, message: str = "작업중", interval: float = 0.1):
+        console = self.console
+        interval = interval
+
+        class SpinnerCtx:
+            def __enter__(self):
+                self._spinner = itertools.cycle(["-", "\\", "|", "/"])
+                self._running = True
+                self._thread = threading.Thread(target=self._spin_loop, daemon=True)
+                self._thread.start()
+                return self
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                self._running = False
+                self._thread.join()
+                if exc_type is None:
+                    console.log(f"{message} [bold green]완료 ✅[/]")
+                else:
+                    console.log(f"{message} [bold red]실패 ❌[/]")
+
+            def _spin_loop(self):
+                while self._running:
+                    console.print(f"{message} {next(self._spinner)}", end="\r", style="cyan")
+                    time.sleep(interval)
+
+        return SpinnerCtx()
