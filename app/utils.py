@@ -277,7 +277,7 @@ class Fileutils:
         images = []
         for i in range(len(pdf)):
             page = pdf[i]
-            pil_image = page.render(scale=200/72).to_pil() # 200dpi
+            pil_image = page.render(scale=100/72).to_pil() # 200dpi
             images.append(pil_image)
 
         return {"images": images, "page_count": len(images)}
