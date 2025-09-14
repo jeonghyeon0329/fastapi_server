@@ -1,5 +1,14 @@
+# 업로드 & 로그 폴더 무시
 /uploads/*
 /logs/*
+
+# 데이터 파일 무시
 *.pdf
 *.xlsx
 *.csv
+
+# Python 가상환경 무시
+venv/
+.env/
+.venv/
+fastapi_venv/

@@ -3,7 +3,7 @@ from typing import List, Tuple, Union, Optional, Iterable
 from pathlib import Path
 from PIL import Image
 import tempfile
-import os, io, glob
+import os, io, glob, subprocess
 
 def _safe_filename(name: str) -> str: 
     """ 사용자가 파일명으로 파일경로를 집어넣는 경우를 막음"""
@@ -62,16 +62,16 @@ class FileManager:
                     "message" : "File required",
             })
         safe_name = _safe_filename(file.filename)
-        self.filename_stem = Path(safe_name).stem ## 확장자 제외
-        self.saved_fullpath = self.dataset_dir / safe_name
+        self.filename = Path(safe_name).stem ## 확장자 제외
+        self.full_path = self.dataset_dir / safe_name
 
-        with open(self.saved_fullpath, "wb") as buffer:
+        with open(self.full_path, "wb") as buffer:
             while True:
                 chunk = await file.read(chunk_size)
                 if not chunk:
                     break
                 buffer.write(chunk)
-        return self.saved_fullpath
+        return self.full_path
 
     @staticmethod # self 영향 없이 진행
     def require_file_count(files: List[UploadFile], expected_count: int) -> Union[UploadFile, Tuple[UploadFile, ...]]:
@@ -225,7 +225,22 @@ class Fileutils:
                     "errors" : str(e)
                 })
         
-    def pdf_info(self, pdf_path):
-        from pdf2image import convert_from_path
-        images = convert_from_path(pdf_path)
-        return {"images" : images, "page_count": len(images)}
+    # def pdf_info(self, pdf_path):
+    #     print(pdf_path)
+    #     from pdf2image import convert_from_path
+    #     images = convert_from_path(pdf_path)
+    #     print(images)
+    #     return {"images" : images, "page_count": len(images)}
+    
+
+    def pdf_info(self, pdf_path: str):
+        import pypdfium2 as pdfium
+
+        pdf = pdfium.PdfDocument(pdf_path)
+        images = []
+        for i in range(len(pdf)):
+            page = pdf[i]
+            pil_image = page.render(scale=200/72).to_pil() # 200dpi
+            images.append(pil_image)
+
+        return {"images": images, "page_count": len(images)}
