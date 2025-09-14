@@ -35,9 +35,9 @@ class OcrlyProcessor:
                     raise Exception("image processing error occurred")
                 
                 json_path = os.path.join(self.result_dir, f"{self.filename}_surya_layout")
-                subprocess.run([
-                    "surya_layout", file_path, "--output_dir", json_path, "--images"
-                ])
+                # subprocess.run([
+                #     "surya_layout", file_path, "--output_dir", json_path, "--images"
+                # ])
             return None
         
         except Exception as e:

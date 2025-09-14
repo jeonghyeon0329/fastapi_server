@@ -25,10 +25,8 @@ async def handle_request(
                 "errors" : e.errors()
             })
     from app.operate.operate_service import operate_run
-    operation_id = uuid.uuid4().hex
-    action = request_cls.__name__  # 액션명(스키마명 기반)
-
-    req_logger = get_request_logger(operation_id, action)
+    operation_id = uuid.uuid4().hex 
+    req_logger = get_request_logger(operation_id, payload.get("user_id"), payload.get("affiliation"), request_cls.__name__)
     req_logger.info("REQUEST_RECEIVED")
 
     try:
@@ -111,7 +109,10 @@ async def run_test(
     user_id: str = Form(...),
     affiliation: Optional[str] = Form(None)
 ):
-    payload = {'user_id' : user_id, 'affiliation': affiliation}
+    payload = {
+        'user_id' : user_id, 
+        'affiliation': affiliation
+    }
     from app.models.test_model import _testRequest
     return await handle_request(_testRequest, payload)
 
