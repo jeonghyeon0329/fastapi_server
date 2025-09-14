@@ -41,15 +41,11 @@ class OcrtextProcessor:
                 
                 json_path = os.path.join(self.result_dir, f"{self.filename}_surya_ocr")
                 with PrintUtils().show_spinner(f"Surya(ocr) 실행중 (page {page_index+1})"):
-                    # subprocess.run(
-                    #     ["surya_ocr", file_path, "--output_dir", json_path, "--images"],
-                    #     stdout=subprocess.DEVNULL,
-                    #     stderr=subprocess.DEVNULL,
-                    #     check=True
-                    # )
-                    print(file_path)
                     subprocess.run(
-                        ["surya_ocr", file_path, "--output_dir", json_path, "--images" , "--debug"]
+                        ["surya_ocr", file_path, "--output_dir", json_path, "--images"],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        check=True
                     )
             return None
         
@@ -59,8 +55,6 @@ class OcrtextProcessor:
     """결과 데이터 파싱"""
     def parsing(self):
         try:
-            print("11")
-            raise
             for page_index in range(int(self.file_info['page_count'])):
                 json_path = os.path.join(self.result_dir, f'{self.filename}_surya_ocr', f'{self.filename}_{page_index}', 'results.json')
                 if not os.path.exists(json_path):

@@ -38,16 +38,13 @@ class OcrxlsxProcessor:
                     raise Exception("can't find tsr result")    
                 with open(file_path, 'r', encoding='utf-8') as file:
                     table_data = pd.DataFrame(json.load(file)['output'])
-                print("?")
                 ## 탐지된 결과가 전혀 없는 경우
                 if text_data.empty or table_data.empty : 
-                    print("??")
                     continue
                 
                 ## table에 대한 정보
                 table_data[['x1', 'y1', 'x2', 'y2']] = table_data['bbox'].apply(lambda x: pd.Series(x))
                 text_data = text_data.sort_values(by=["y1", "x1", "y2", "x2"]).reset_index(drop=True)
-                print("?")
                 # 레코드 신뢰도 계산
                 # cells[["page_index", "table_index", "row_id", "col_id"]]
                 text_data['cell_id'] = text_data.apply(lambda x : credit(x, table_data, self.overlap_threshold), axis=1)
@@ -80,8 +77,6 @@ class OcrxlsxProcessor:
                         }) 
                     .reset_index(drop=True)
                 )
-                print("???")
-                print(final_df)
                 if not final_df.empty:
                     final_df[["page_index", "table_index", "row_id", "col_id"]] = final_df["cell_id"].str.split("_", expand=True)
                     
