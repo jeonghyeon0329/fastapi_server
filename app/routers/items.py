@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Form, UploadFile, HTTPException, responses
+from fastapi import APIRouter, Form, UploadFile, HTTPException, responses, File
 from app.core.logging_config import setup_logging, get_request_logger
 from pydantic import BaseModel
-from typing import Optional, Type, Dict, Any
-import os, uuid
+from typing import Optional, Type, Dict, Any, Annotated
+from app.utils import *
+import os, uuid, re, json
 
 logger = setup_logging()
 router = APIRouter()
@@ -86,7 +87,28 @@ async def handle_request(
             headers={"X-Operation-Id": operation_id},
         )
         
+
+@router.post("/ocr-table")
+async def run_ocr(
+    message: Annotated[Union[str, bytes], Form(...)],
+    file: List[UploadFile] = File(...),
+):
+    message = json.loads(re.sub(r'[\x00-\x1f\x7f]', '', message))
+    Fileutil = Fileutils()
+    file = Fileutil.extract_files_by_count(file, 1)
+    Fileutil.validate_file_extensions(file, [".pdf", "jpg", "jpeg", "png"])
     
+    file = Fileutil.convert_images_to_pdf(file)
+    payload = {
+        'user_id' : str(message['user_id']), 
+        'affiliation': 'cogcom',
+        'version' : str(message['version']),
+        'requestId' : str(message['requestId']),
+        'timestamp' : str(message['timestamp']),
+    }
+    from app.models.ocr_model import ocrRequest
+    return await handle_request(ocrRequest, payload, file = file, return_file=False)
+
 @router.post("/~test")
 async def run_test(
     user_id: str = Form(...),

@@ -1,8 +1,9 @@
 from fastapi import HTTPException, UploadFile
 from typing import List, Tuple, Union, Optional, Iterable
 from pathlib import Path
-import glob
-import os
+from PIL import Image
+import tempfile
+import os, io, glob
 
 def _safe_filename(name: str) -> str: 
     """ 사용자가 파일명으로 파일경로를 집어넣는 경우를 막음"""
@@ -147,3 +148,85 @@ class Fileutils:
             
         except Exception as e:
             raise Exception(e)
+        
+    def extract_files_by_count(self, files, expected_count):
+        if len(files) != expected_count:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error_code" : "F001",
+                    "message" : "wrong file count",
+                })
+
+        filenames = [file.filename for file in files]
+        if len(filenames) != len(set(filenames)):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error_code" : "F002",
+                    "message" : "Failed to count files",
+                })
+
+        return files[0] if expected_count == 1 else tuple(files)
+    
+    def validate_file_extensions(self, files, allowed_extensions):
+
+        ## 허용하는 파일 확장자 목록
+        if isinstance(allowed_extensions, str):
+            allowed_extensions = [allowed_extensions]
+
+        ## 파일 리스트 부분은 list 형태
+        if not isinstance(files, list): files = [files]
+        for file in files:
+            if not any(file.filename.lower().endswith(ext.lower()) for ext in allowed_extensions):
+                raise HTTPException(
+                    status_code=500,
+                    detail={
+                        "error_code" : "F003",
+                        "message" : "unexpected Files-format",
+                })
+
+    def convert_images_to_pdf(self, files):
+        try:
+            is_single_file = not isinstance(files, list)
+            if is_single_file:
+                files = [files]
+
+            converted = []
+            for f in files:
+                ext = f.filename.lower()
+                if ext.endswith((".jpg", ".jpeg", ".png")):
+                    image = Image.open(f.file).convert("RGB")
+                    pdf_stream = io.BytesIO()
+                    image.save(pdf_stream, format="PDF")
+                    pdf_stream.seek(0)
+
+                    # SpooledTemporaryFile로 감싸기
+                    temp = tempfile.SpooledTemporaryFile()
+                    temp.write(pdf_stream.read())
+                    temp.seek(0)
+
+                    # UploadFile 객체 생성 (content_type 없이)
+                    pdf_file = UploadFile(
+                        filename=ext.rsplit(".", 1)[0] + ".pdf",
+                        file=temp
+                    )
+                    converted.append(pdf_file)
+                else:
+                    converted.append(f)
+
+            return converted[0] if is_single_file else converted
+        
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "error_code" : "F003",
+                    "message" : "unexpected Files-format",
+                    "errors" : str(e)
+                })
+        
+    def pdf_info(self, pdf_path):
+        from pdf2image import convert_from_path
+        images = convert_from_path(pdf_path)
+        return {"images" : images, "page_count": len(images)}
