@@ -6,9 +6,6 @@ import json
 class ocrRequest(BaseModel):
     user_id : str
     affiliation : str
-    version : str
-    requestId : str
-    timestamp : str
     model: Optional[Dict[str, str]] = {
         "ocr_layout": "ocrlyt",
         "ocr_tsr": "ocrtsr",

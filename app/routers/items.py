@@ -11,9 +11,9 @@ router = APIRouter()
 async def handle_request(
     request_cls: Type[BaseModel],
     payload: Dict[str, Any], *,
+    file: Optional[UploadFile] = None,
     return_file: bool = False
 ):
-    
     try:
         param = request_cls(**payload)
     except Exception as e:
@@ -32,7 +32,7 @@ async def handle_request(
     req_logger.info("REQUEST_RECEIVED")
 
     try:
-        result = await operate_run(param, payload)
+        result = await operate_run(param, payload, **({'file': file} if file is not None else {}))
 
     except HTTPException as e: 
         raise
@@ -88,7 +88,7 @@ async def handle_request(
         )
         
 
-@router.post("/ocr-table")
+@router.post("/ocr")
 async def run_ocr(
     message: Annotated[Union[str, bytes], Form(...)],
     file: List[UploadFile] = File(...),
@@ -101,10 +101,7 @@ async def run_ocr(
     file = Fileutil.convert_images_to_pdf(file)
     payload = {
         'user_id' : str(message['user_id']), 
-        'affiliation': 'cogcom',
-        'version' : str(message['version']),
-        'requestId' : str(message['requestId']),
-        'timestamp' : str(message['timestamp']),
+        'affiliation': str(message['affiliation'])
     }
     from app.models.ocr_model import ocrRequest
     return await handle_request(ocrRequest, payload, file = file, return_file=False)

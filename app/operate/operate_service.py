@@ -12,8 +12,8 @@ async def operate_run(operate_parameter, payload, file = None):
     """ 파일 처리부 """
     try:
         file_manager = FileManager(
-            getattr(payload, "user_id", None),
-            getattr(payload, "affiliation", None)
+            payload.get("user_id", None),
+            payload.get("affiliation", None)
         )
         if file:    
             await file_manager.save_file_to_dataset(file)

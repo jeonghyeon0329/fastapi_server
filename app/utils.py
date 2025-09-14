@@ -22,7 +22,7 @@ class FileManager:
     UPLOAD_ROOT = Path("uploads")
     def __init__(self, user_id: str, affiliation: str):
         self.user_id: str = user_id
-        self.affiliation = affiliation
+        self.affiliation: str = affiliation
         self.base_dir = f"{self.affiliation}_{self.user_id}" if self.user_id and self.affiliation else None
         self.subdirs: List[str] = ["dataset", "dataset_tmp", "result"]
         self.filename = None
@@ -46,8 +46,8 @@ class FileManager:
         if not base_path.exists():
             base_path.mkdir(parents=True)
 
-        for subfolder in self.subfolder:
-            sub_path = base_path / subfolder
+        for subdirs in self.subdirs:
+            sub_path = base_path / subdirs
             if not sub_path.exists():
                 sub_path.mkdir(parents=True)
         return base_path
@@ -61,7 +61,6 @@ class FileManager:
                     "error_code" : "C001",
                     "message" : "File required",
             })
-    
         safe_name = _safe_filename(file.filename)
         self.filename_stem = Path(safe_name).stem ## 확장자 제외
         self.saved_fullpath = self.dataset_dir / safe_name
