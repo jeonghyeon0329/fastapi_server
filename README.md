@@ -1,21 +1,5 @@
 # fastapi_server
 
-## 📦 요구 사항
-- Python 3.11.0
-
-
-## 🛠 설치
-```bash
-# 1) 저장소 클론
-git clone https://github.com/jeonghyeon0329/fastapi_server.git
-
-# 2) 가상환경 & 패키지 설치 (pip)
-python -m venv .venv
-source .venv/bin/activate     # Windows: .\venv\Scripts\activate
-pip install -U pip
-pip install -r requirements.txt
-```
-
 ## ✨ 기능 요약
 **파편화된 python파일을 mvc기반으로 python 파일을 활용할 수 있는 Fastapi server**
 - Router 정의
@@ -35,3 +19,19 @@ pip install -r requirements.txt
 
 - Pytest 기능 정의
     서비스 로직을 구현하고 Pytest 기능을 활용하여 기능 테스트를 진행합니다.
+
+## 📦 요구 사항
+- Python 3.11.0
+
+## 🛠 설치
+```bash
+# 1) 저장소 클론
+git clone https://github.com/jeonghyeon0329/fastapi_server.git
+
+# 2) 가상환경 & 패키지 설치 (pip)
+python -m venv .venv
+source .venv/bin/activate     # Windows: .\venv\Scripts\activate
+pip install -U pip
+pip install -r requirements.txt
+```
+
