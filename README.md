@@ -1,7 +1,5 @@
 # fastapi_server
-파편화된 python파일을 mvc기반으로 python 파일을 활용할 수 있는 Fastapi server
 
----
 ## 📦 요구 사항
 - Python 3.11.0
 
@@ -19,8 +17,9 @@ pip install -r requirements.txt
 ```
 
 ## ✨ 기능 요약
+**파편화된 python파일을 mvc기반으로 python 파일을 활용할 수 있는 Fastapi server**
 - Router 정의
-    app/routers/items.py 와 같이 routers/ 폴더에 엔드포인트를 정의합니다.
+    app/routers/items.py의 ~test와 같이 routers/ 폴더에 엔드포인트를 정의합니다.
     각 router 파일은 APIRouter 객체를 생성하고, API 엔드포인트(path, method, response_model 등)를 등록합니다.
 
 - Model 정의
@@ -35,5 +34,4 @@ pip install -r requirements.txt
     각 Processor 클래스는 단일 책임 원칙을 지켜, 해당 기능의 입력 검증 → 처리 → 결과 반환 과정을 담당합니다.
 
 - Pytest 기능 정의
-    서비스 로직을 구현하고 Pytest 기능을 활용하여 기능 테스트를 진행한다.
-    기능테스트의 주된 목적은 [API]input & output 검증, [API] 속도 측정이 있다.
+    서비스 로직을 구현하고 Pytest 기능을 활용하여 기능 테스트를 진행합니다.
