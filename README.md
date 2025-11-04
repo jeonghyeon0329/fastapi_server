@@ -1,4 +1,4 @@
-# fastapi_server
+# FastMVC
 
 ## ✨ 기능 요약
 **파편화된 python파일을 mvc기반으로 python 파일을 활용할 수 있는 Fastapi server**
