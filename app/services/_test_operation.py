@@ -14,7 +14,7 @@ class _testProcessor:
             delete_patterns = [
 
             ]
-            Fileutils().resultfile_delete(delete_patterns)
+            FileUtils().resultfile_delete(delete_patterns)
             return {"success": True, "error_message": None}
         
         except Exception as e:

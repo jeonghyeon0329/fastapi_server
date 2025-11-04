@@ -18,7 +18,6 @@ BASE_URL = "http://localhost:9000"
 )
 def test(name, payload, expected_status):
     url = f"{BASE_URL}/items/~test"
-    # resp = requests.post(url, json=payload, timeout=10)
     resp = requests.post(url, data=payload, timeout=10)
 
     if expected_status == 200:
