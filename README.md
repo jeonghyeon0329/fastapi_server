@@ -135,7 +135,7 @@ gunicorn main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8000
 
 ---
 
-## 🪶 로그 예시
+## 로그 예시
 ```
 [2025-11-05 07:57:59] [INFO] [fastapi_server] 
 [op=0152602f...] [user=test] [aff=test] [act=_testRequest] REQUEST_COMPLETED
