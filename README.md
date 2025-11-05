@@ -40,19 +40,19 @@ async def run_test(user_id: str = Form(...), affiliation: Optional[str] = Form(N
 class _testRequest(BaseModel):
     user_id: str
     affiliation: Optional[str]
+    model: Optional[Dict[str, str]] = {
+        "test": "_test",
+    }
 ```
+작업 모듈 일련화를 위해 인덱스 기반 operation 이름을 작성합니다.(ex. _test)
 
 ---
 
 ### ⚙️ 서비스 계층 (`app/services/`)
-모델의 `operate_parameter.model` 딕셔너리에 정의된 키를 기준으로  
-동적으로 서비스 모듈을 로드합니다.
-```python
-operate_parameter.model = {"test": "_test"}
-```
+모델의 `operate_parameter.model` 딕셔너리에 정의된 키-값를 기준으로 동적으로 서비스 모듈을 로드합니다.
 서비스 모듈은 자동으로 해당 프로세서를 불러옵니다.
 ```python
-from app.services._test_operation import TestProcessor
+from app.services._test_operation import _testProcessor
 ```
 
 ---
@@ -62,7 +62,11 @@ from app.services._test_operation import TestProcessor
 ```python
 {ServiceName.capitalize()}Processor
 ```
-예시: `TestProcessor`
+예시: 
+model: Optional[Dict[str, str]] = {
+        "step1": "task",
+    }
+->TaskProcessor
 
 각 프로세서는 다음의 단일 책임 원칙(SRP)을 따릅니다.
 - 입력 데이터 검증  
@@ -76,17 +80,6 @@ from app.services._test_operation import TestProcessor
 ```bash
 pytest -v
 ```
-
----
-
-## ⚡ 주요 기능
-
-✅ MVC 기반 모듈 구조  
-✅ 통합 예외 처리 (`make_json_response`, `raise_http`)  
-✅ 컨텍스트 기반 로깅 (`operation_id`, `user_id`, `affiliation`)  
-✅ 안전한 파일 입출력 관리 (`FileManager`)  
-✅ 콘솔 배너 및 환경 감지 기능  
-✅ 개발 편의성을 위한 Rich 콘솔 출력  
 
 ---
 
@@ -113,8 +106,6 @@ pip install -r requirements.txt
 ---
 
 ## 🚀 서버 실행
-
-### 🧑‍💻 로컬 개발 (Uvicorn)
 ```bash
 python main.py
 ```
@@ -125,25 +116,11 @@ python main.py
 
 ---
 
-### 🏭 운영 환경 (Gunicorn)
-```bash
-gunicorn main:app -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8000
-```
-
-- 병렬 워커 프로세스 자동 설정  
-- 콘솔 및 에러 로그 최소화  
-
----
-
 ## 로그 예시
 ```
 [2025-11-05 07:57:59] [INFO] [fastapi_server] 
 [op=0152602f...] [user=test] [aff=test] [act=_testRequest] REQUEST_COMPLETED
-```
 
-> FastMVC의 로깅은 최소한의 Traceback만 출력하여,  
 > 디버깅과 운영 로그 모두 효율적으로 관리할 수 있습니다.
-
+```
 ---
-
-> _FastMVC — FastAPI를 가장 명확하고 예측 가능한 방식으로 구조화하는 방법_
